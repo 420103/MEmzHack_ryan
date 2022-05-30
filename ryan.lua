@@ -5547,7 +5547,8 @@ connection = uis.InputBegan:Connect(function(input)
 			local auto = weapons:Tab("auto") 
 
 			local function AddRage(Tab) 
-				Tab:Element("Jumbobox", "hitboxes", {options = {"head", "torso", "pelvis", 'arms'}}) 
+				Tab:Element('Jumbobox', 'hitboxes', {options = {'head', 'torso', 'pelvis', 'arms', 'hand'}})           
+				Tab:Element("Slider", 'hitchance', {min = 1, max = 102, default = 1})
 				Tab:Element("Slider", "minimum damage", {min = 1, max = 100, default = 20}) 
 				Tab:Element("Slider", "max fov", {min = 1, max = 180, default = 180}) 
 			end 
@@ -7085,28 +7086,44 @@ connection = uis.InputBegan:Connect(function(input)
 			
 											local Hitboxes = {}
 											for _,Hitbox in ipairs(Stats.hitboxes.Jumbobox) do
-													if Hitbox == "head" then
-														INSERT(Hitboxes, Player.Character:FindFirstChild("Head"))
-													elseif Hitbox == "torso" then
+												if Stats['prefer body'].Toggle then
+													if Hitbox == 'torso' then
 														INSERT(Hitboxes, Player.Character.UpperTorso)
-													elseif Hitbox == "arms" then
+													elseif Hitbox == 'arms' then
 														INSERT(Hitboxes, Player.Character.LeftUpperArm)
 														INSERT(Hitboxes, Player.Character.RightUpperArm)
-													elseif Hitbox == "hand" then
+													elseif Hitbox == 'hand' then
+														INSERT(Hitboxes, Player.Character.LeftHand)
+														INSERT(Hitboxes, Player.Character.RightHand)
+												    elseif Hitbox == 'head' and (not values.rage.aimbot['auto baim'].Toggle and not values.rage.aimbot['auto baim'].Active or Player.Character:FindFirstChild('FakeHead')) then
+														INSERT(Hitboxes, Player.Character.Head)
+													else
+														INSERT(Hitboxes, Player.Character.LowerTorso) 
+													end
+												else
+													if Hitbox == 'head' then
+														INSERT(Hitboxes, Player.Character:FindFirstChild('Head'))
+												    elseif Hitbox == 'torso' then
+														INSERT(Hitboxes, Player.Character.UpperTorso)
+													elseif Hitbox == 'arms' then
+														INSERT(Hitboxes, Player.Character.LeftUpperArm)
+														INSERT(Hitboxes, Player.Character.RightUpperArm)
+													elseif Hitbox == 'hand' then
 														INSERT(Hitboxes, Player.Character.LeftHand)
 														INSERT(Hitboxes, Player.Character.RightHand)
 													else
 														INSERT(Hitboxes, Player.Character.LowerTorso) 
+													end
 												end
 											end
-			
+
 											for _,Hitbox in ipairs(Hitboxes) do
 												local wallbang = false
 												local Ignore2 = {unpack(Ignore)}
 												for _,Part in next, Player.Character:GetChildren() do
 													if Part ~= Hitbox then INSERT(Ignore2, Part) end
 												end
-			
+
 												for a,b in next, game.Players:GetChildren() do 
 													if b ~= Player and b.Character then
 														for i, h in next, b.Character:GetChildren() do 
@@ -7114,11 +7131,11 @@ connection = uis.InputBegan:Connect(function(input)
 														end
 													end 
 												end
-			
-												if values.rage.aimbot["wallbang"].Toggle then
+
+												if values.rage.aimbot['wallbang'].Toggle then
 													local Hits = {}
 													local EndHit, Hit, Pos
-													
+
 													local Ray1 = RAY(Origin, (Hitbox.Position  - Origin).unit * (Hitbox.Position - Origin).magnitude)
 													repeat
 														Hit, Pos = workspace:FindPartOnRayWithIgnoreList(Ray1, Ignore2, false, true)
@@ -7127,7 +7144,7 @@ connection = uis.InputBegan:Connect(function(input)
 																EndHit = Hit
 															else
 																INSERT(Ignore2, Hit)
-																INSERT(Hits, {["Position"] = Pos,["Hit"] = Hit})
+																INSERT(Hits, {['Position'] = Pos,['Hit'] = Hit})
 															end
 														end
 													until EndHit ~= nil or #Hits >= 4 or Hit == nil 
